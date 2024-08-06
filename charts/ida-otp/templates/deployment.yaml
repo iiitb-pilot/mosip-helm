@@ -108,6 +108,9 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
             {{- end }}
+          volumeMounts:
+            - name: key-store
+              mountPath: {{ .Values.persistence.mountDir }}  
           ports:
             - name: spring-service
               containerPort: {{ .Values.springServicePort }}
@@ -133,3 +136,11 @@ spec:
         {{- if .Values.sidecars }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.sidecars "context" $) | nindent 8 }}
         {{- end }}
+      volumes:
+        - name: key-store
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim | default (include "common.names.fullname" .) }}
+          {{- else }}
+          emptyDir: {}
+          {{ end }}  

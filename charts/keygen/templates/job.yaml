@@ -80,3 +80,14 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
             {{- end }}
+          volumeMounts:
+            - name: keystore
+              mountPath: {{ .Values.persistence.mountDir }}
+      volumes:
+        - name: keystore
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim | default (include "common.names.fullname" .) }}
+          {{- else }}
+          emptyDir: {}
+          {{ end }}          

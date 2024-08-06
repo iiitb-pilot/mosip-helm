@@ -233,7 +233,8 @@ initContainers: {}
 sidecars: {}
 
 persistence:
-  enabled: false
+  enabled: true
+  storageClass: nfs-client
   ## If defined, storageClassName: <storageClass>
   ## If set to "-", storageClassName: "", which disables dynamic provisioning
   ## If undefined (the default) or set to null, no storageClassName spec is
@@ -249,11 +250,13 @@ persistence:
   storageClass:
   accessModes:
     - ReadWriteOnce
-  size: 10M
+  size: 1G
   existingClaim:
   # Dir where config and keys are written inside container
-  mountDir:
-
+  mountDir: /mnt/platformkeys
+  labels:
+    purpose: keystore
+  reclaimPolicy: Delete    
 ## Init containers parameters:
 ## volumePermissions: Change the owner and group of the persistent volume mountpoint to runAsUser:fsGroup values from the securityContext section.
 ##
